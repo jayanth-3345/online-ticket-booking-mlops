@@ -25,7 +25,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install "dvc[gdrive]"
 
-      - name: Run Continuous Tests
+      - name: Configure DVC service account
+        run: |
+          dvc remote modify myremote gdrive_use_service_account true
+
+      - name: Pull DVC data
+        env:
+          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+        run: |
+          dvc pull
+
+      - name: Continuous Build
+        run: |
+          python src/train.py
+
+      - name: Continuous Testing
         run: |
           pytest -v
