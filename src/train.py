@@ -31,6 +31,12 @@ with mlflow.start_run():
     # Train
     model.fit(X_train, y_train)
 
+import os
+import joblib
+
+os.makedirs("models", exist_ok=True)
+joblib.dump(model, "models/model.joblib")
+
     # Predict
     predictions = model.predict(X_test)
 

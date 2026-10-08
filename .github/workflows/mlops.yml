@@ -45,3 +45,9 @@ jobs:
       - name: Continuous Testing
         run: |
           pytest -v
+       
+      - name: Upload Built Model
+        uses: actions/upload-artifact@v4
+        with:
+          name: movie-recommendation-model
+          path: models/model.joblib
