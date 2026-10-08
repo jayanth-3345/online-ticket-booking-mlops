@@ -1,9 +1,12 @@
+import os
+import joblib
 import pandas as pd
 import mlflow
 import mlflow.sklearn
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
+
 
 # Load dataset
 data = pd.read_csv("data/movies.csv")
@@ -12,7 +15,7 @@ data = pd.read_csv("data/movies.csv")
 X = data[["user_id", "movie_id"]]
 y = data["rating"]
 
-# Train/test split
+# Train test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -31,12 +34,6 @@ with mlflow.start_run():
     # Train
     model.fit(X_train, y_train)
 
-import os
-import joblib
-
-os.makedirs("models", exist_ok=True)
-joblib.dump(model, "models/model.joblib")
-
     # Predict
     predictions = model.predict(X_test)
 
@@ -48,23 +45,24 @@ joblib.dump(model, "models/model.joblib")
     mlflow.log_param("n_neighbors", n_neighbors)
     mlflow.log_metric("mse", mse)
 
+    # Save model for Continuous Build
+    os.makedirs("models", exist_ok=True)
+    joblib.dump(model, "models/model.joblib")
+
     # Save model to MLflow
     mlflow.sklearn.log_model(
-    model,
-    "model",
-    skops_trusted_types=[
-        "sklearn.metrics._dist_metrics.EuclideanDistance64",
-        "sklearn.neighbors._kd_tree.KDTree",
-    ],
-)
+        model,
+        "model",
+        skops_trusted_types=[
+            "sklearn.metrics._dist_metrics.EuclideanDistance64",
+            "sklearn.neighbors._kd_tree.KDTree",
+        ],
+    )
 
-    print("Movie Recommendation Model")
-    print("--------------------------")
-    print(f"Algorithm: KNN")
-    print(f"Neighbors: {n_neighbors}")
-    print(f"MSE: {mse:.4f}")
-    print("Model logged to MLflow successfully.")
-
-
-if __name__ == "__main__":
-    pass
+print("Movie Recommendation Model")
+print("--------------------------")
+print("Algorithm: KNN")
+print(f"Neighbors: {n_neighbors}")
+print(f"MSE: {mse:.4f}")
+print("Model saved to models/model.joblib")
+print("Model logged to MLflow successfully.")
