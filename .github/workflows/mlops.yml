@@ -22,11 +22,11 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install "dvc[gdrive]"
-    pip install "pyOpenSSL==24.2.1"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "dvc[gdrive]"
+          pip install "pyOpenSSL==24.2.1"
 
       - name: Configure DVC service account
         run: |
